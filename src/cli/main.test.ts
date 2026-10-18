@@ -1,9 +1,10 @@
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { canonicalize } from '../canonical-json.js';
+import { canonicalBytes, canonicalize } from '../canonical-json.js';
 import { seedCommitment } from '../draw.js';
 import { ENGINE } from '../engine.js';
-import { createRecord, recordBytes, type ElectionRecord } from '../record.js';
+import { createRecord } from '../record.js';
+import { resultsFile } from '../results.js';
 import { SEED } from '../test-support/ballots.js';
 import { readFixture } from '../test-support/published.js';
 import type { Ballot, ElectionDefinition } from '../types.js';
@@ -15,16 +16,17 @@ const pem = (key: typeof publicKey) => key.export({ type: 'spki', format: 'pem' 
 
 const election = readFixture<ElectionDefinition>('primary-2019', 'election.json');
 const ballots = readFixture<Ballot[]>('primary-2019', 'ballots.json');
+const PUBLISHED = ['--seed-commitment', seedCommitment(SEED)];
 
 const record = (list: Ballot[] = ballots, seed = SEED) =>
   createRecord({ election, ballots: list, seed, seedCommitment: seedCommitment(seed) });
 
-function signed(r: ElectionRecord) {
+function signed(document: object) {
   return {
-    record: r,
+    record: document,
     signature: {
       algorithm: 'ecdsa-p256-sha256',
-      value: sign('sha256', recordBytes(r), privateKey).toString('base64'),
+      value: sign('sha256', canonicalBytes(document), privateKey).toString('base64'),
     },
   };
 }
@@ -44,7 +46,7 @@ function run(argv: string[], files: Record<string, unknown>) {
   return { code, text: lines.join('\n') };
 }
 
-const verify = (envelope: unknown, key = pem(publicKey), extra: string[] = []) =>
+const verify = (envelope: unknown, key = pem(publicKey), extra: string[] = PUBLISHED) =>
   run(['verify', 'record.json', '--public-key', 'key.pem', ...extra], {
     'record.json': envelope,
     'key.pem': key,
@@ -54,27 +56,49 @@ describe('ustp-tally verify', () => {
   it('verifies a signed record of the 2019 primary end to end', () => {
     const { code, text } = verify(signed(record()));
     expect(text).toMatch(/^pass +signature /m);
-    expect(text).toMatch(/^info +record hash +sha256:[0-9a-f]{64}$/m);
-    expect(text).toMatch(/^pass +seed .*compare it with the commitment published/m);
+    expect(text).toMatch(/^info +tally hash +sha256:[0-9a-f]{64}$/m);
+    expect(text).toMatch(/^pass +seed +the revealed seed matches the published commitment/m);
     expect(text).toMatch(/^pass +ballot order +312 cast vote records/m);
     expect(text).toMatch(/^pass +engine /m);
     expect(text).toMatch(/^pass +re-tally +1 of 1 contests/m);
-    expect(text).toMatch(/^Verified\./m);
+    expect(text).toMatch(/^Verified\.$/m);
     expect(code).toBe(0);
   });
 
-  it('checks the seed against the commitment published before polls opened', () => {
-    const published = seedCommitment(SEED);
-    const good = verify(signed(record()), pem(publicKey), ['--seed-commitment', published]);
-    expect(good.text).toMatch(/^pass +seed +the revealed seed matches the published commitment/m);
-    expect(good.code).toBe(0);
+  it('never reports verified without the published seed commitment', () => {
+    const { code, text } = verify(signed(record()), pem(publicKey), []);
+    expect(text).toMatch(/^WARN +seed +.*agrees with itself/m);
+    expect(text).toMatch(/^pass +re-tally /m);
+    expect(text).toMatch(/^NOT verified: nothing failed, but the seed could not be checked/m);
+    expect(text).not.toMatch(/^Verified/m);
+    expect(code).toBe(3);
+  });
+
+  it('fails a seed picked after the published commitment', () => {
     // An operator who holds the signing key re-picks the seed after seeing ballots.
-    const repicked = verify(signed(record(ballots, 'b'.repeat(64))), pem(publicKey), [
-      '--seed-commitment',
-      published,
-    ]);
+    const repicked = verify(signed(record(ballots, 'b'.repeat(64))));
     expect(repicked.text).toMatch(/^FAIL +seed /m);
     expect(repicked.code).toBe(1);
+  });
+
+  it('checks a signed results file as far as public data allows', () => {
+    const { code, text } = verify(signed(resultsFile(record())));
+    expect(text).toMatch(/^pass +signature /m);
+    expect(text).toMatch(/^info +results hash +sha256:[0-9a-f]{64}$/m);
+    expect(text).toMatch(/^pass +seed /m);
+    expect(text).toMatch(/^pass +engine /m);
+    expect(text).toMatch(/^pass +consistency /m);
+    expect(text).toMatch(/^WARN +re-tally +.*auditor tier/m);
+    expect(text).toMatch(/^NOT verified: nothing failed, but the re-tally could not be checked/m);
+    expect(code).toBe(3);
+  });
+
+  it('fails a signed results file whose ballot count disagrees with its results', () => {
+    const file = resultsFile(record());
+    file.ballots = 313;
+    const { code, text } = verify(signed(file));
+    expect(text).toMatch(/^FAIL +consistency /m);
+    expect(code).toBe(1);
   });
 
   it('refuses a file that is not in RFC 8785 form, such as one with a duplicate key', () => {

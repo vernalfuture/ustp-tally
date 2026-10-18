@@ -1,20 +1,31 @@
-// The verifier CLI: `ustp-tally verify <signed-record.json> --public-key <key.pem>`. It checks that
-// the file is exactly RFC 8785 text, checks the signature, the seed, the ballot order, and the
-// engine, re-runs the tally, and diffs it against the published result. This is the only code in
-// the package that reads files or uses Node's crypto. Merkle roots, chains, anchors, and the count
+// The verifier CLI: `ustp-tally verify <signed-file.json> --public-key <key.pem>`. It checks that
+// the file is exactly RFC 8785 text and checks its signature. For a tally record it then checks
+// the seed, the ballot order, and the engine, re-runs the tally, and diffs it against the
+// published result; for a results file it checks what public data allows. Nothing verifies
+// without the seed commitment published before polls opened. This is the only code in the
+// package that reads files or uses Node's crypto. Merkle roots, chains, anchors, and the count
 // invariant arrive with runbook step P2.A2.
 import { createHash, createPublicKey, verify, type KeyObject } from 'node:crypto';
 import { canonicalBytes, canonicalize } from '../canonical-json.js';
+import type { PublishedValues } from '../checks.js';
 import { assertSeed } from '../draw.js';
 import { ENGINE } from '../engine.js';
 import { TallyInputError } from '../errors.js';
 import {
   parseRecord,
-  recordHash,
+  RECORD_FORMAT,
   retallyRecord,
+  tallyHash,
   type ElectionRecord,
-  type RetallyOptions,
 } from '../record.js';
+import {
+  checkResultsFile,
+  parseResultsFile,
+  RESULTS_FORMAT,
+  resultsHash,
+  type ResultsFile,
+} from '../results.js';
+import { isPlainObject } from '../validate.js';
 
 export interface Io {
   readFile(path: string): string;
@@ -26,13 +37,14 @@ export const SIGNATURE_ALGORITHM = 'ecdsa-p256-sha256';
 const MAX_DIFFERENCES = 20;
 
 const USAGE = [
-  'Usage: ustp-tally verify <signed-record.json> --public-key <key.pem> [--seed-commitment <hex>]',
+  'Usage: ustp-tally verify <signed-file.json> --public-key <key.pem> --seed-commitment <hex>',
   '       ustp-tally --version',
   '',
-  'Checks the signature on a USTP election record with the given ECDSA P-256 public key',
-  '(SPKI PEM), re-runs the tally from its cast vote records and seed, and compares the result',
-  'with the one the record publishes. --seed-commitment checks the seed against the commitment',
-  'published before polls opened. Exit status: 0 verified, 1 a check failed, 2 bad input.',
+  'Checks the signature on a USTP tally record or results file with the given ECDSA P-256',
+  'public key (SPKI PEM) and the seed against the commitment published before polls opened.',
+  'For a tally record it re-runs the count and compares it with the published result.',
+  'Exit status: 0 verified, 1 a check failed, 2 bad input, 3 nothing failed but something',
+  'could not be checked (no --seed-commitment, or a results file whose ballots are auditor-only).',
 ];
 
 class InputError extends Error {}
@@ -168,18 +180,26 @@ function isCanonicalText(envelope: Envelope): boolean {
   }
 }
 
+/** Parses whichever signed document the envelope holds: a tally record or a results file. */
+function parseDocument(value: unknown): ElectionRecord | ResultsFile {
+  const format = isPlainObject(value) ? value.format : undefined;
+  if (format === RESULTS_FORMAT) return parseResultsFile(value);
+  if (format === RECORD_FORMAT) return parseRecord(value);
+  throw new TallyInputError('record.format', `must be ${RECORD_FORMAT} or ${RESULTS_FORMAT}`);
+}
+
+const STATUS_WORD = { pass: 'pass', fail: 'FAIL', unchecked: 'WARN' } as const;
+
 function verifyCommand(args: VerifyArgs, io: Io): number {
   const envelope = readEnvelope(io, args.file);
   const key = readPublicKey(io, args.keyFile);
-  const line = (status: 'pass' | 'FAIL' | 'info', name: string, detail: string) =>
-    io.out(printable(`${status}  ${name.padEnd(12)} ${detail}`));
-  const check = (ok: boolean, name: string, detail: string) =>
-    line(ok ? 'pass' : 'FAIL', name, detail);
+  const line = (word: string, name: string, detail: string) =>
+    io.out(printable(`${word}  ${name.padEnd(12)} ${detail}`));
   io.out(printable(`${ENGINE.name} ${ENGINE.version}: verifying ${args.file}`));
 
   if (!isCanonicalText(envelope)) {
-    check(
-      false,
+    line(
+      'FAIL',
       'format',
       'the file is not exactly RFC 8785 JSON (duplicate keys, extra whitespace, or non-canonical numbers); a record writer must emit the canonical form',
     );
@@ -201,31 +221,36 @@ function verifyCommand(args: VerifyArgs, io: Io): number {
   } catch {
     signatureOk = false;
   }
-  check(
-    signatureOk,
+  line(
+    signatureOk ? 'pass' : 'FAIL',
     'signature',
-    `${signatureOk ? 'valid' : 'does not match'}: ECDSA P-256 with SHA-256 over the RFC 8785 record, key sha256:${fingerprint}`,
+    `${signatureOk ? 'valid' : 'does not match'}: ECDSA P-256 with SHA-256 over the RFC 8785 document, key sha256:${fingerprint}`,
   );
 
-  let record: ElectionRecord;
+  let document: ElectionRecord | ResultsFile;
   try {
-    record = parseRecord(envelope.record);
+    document = parseDocument(envelope.record);
   } catch (error) {
     if (!(error instanceof TallyInputError)) throw error;
-    check(false, 'record', error.message);
+    line('FAIL', 'record', error.message);
     io.out('NOT verified.');
     return 1;
   }
-  line('info', 'record hash', `sha256:${recordHash(record)}`);
-  const { name, version, integrity } = record.tally.engine;
+  if (document.format === RECORD_FORMAT)
+    line('info', 'tally hash', `sha256:${tallyHash(document)}`);
+  else line('info', 'results hash', `sha256:${resultsHash(document)}`);
+  const { name, version, integrity } = document.tally.engine;
   if (integrity !== undefined) {
     line('info', 'build hash', `${integrity}; compare: npm view ${name}@${version} dist.integrity`);
   }
 
-  const options: RetallyOptions =
+  const published: PublishedValues =
     args.seedCommitment === undefined ? {} : { seedCommitment: args.seedCommitment };
-  const report = retallyRecord(record, options);
-  for (const c of report.checks) check(c.ok, c.name, c.detail);
+  const report =
+    document.format === RECORD_FORMAT
+      ? retallyRecord(document, published)
+      : { ...checkResultsFile(document, published), differences: [] };
+  for (const c of report.checks) line(STATUS_WORD[c.status], c.name, c.detail);
   for (const d of report.differences.slice(0, MAX_DIFFERENCES)) {
     io.out(printable(`      ${d.path}: expected ${show(d.expected)}, found ${show(d.found)}`));
   }
@@ -233,9 +258,18 @@ function verifyCommand(args: VerifyArgs, io: Io): number {
     io.out(`      and ${report.differences.length - MAX_DIFFERENCES} more`);
   }
 
-  const ok = signatureOk && report.ok;
-  io.out(ok ? 'Verified.' : 'NOT verified.');
-  return ok ? 0 : 1;
+  if (!signatureOk || report.verdict === 'failed') {
+    io.out('NOT verified.');
+    return 1;
+  }
+  if (report.verdict === 'incomplete') {
+    // Nothing failed, but something the verdict needs couldn't be checked: never a pass.
+    const open = report.checks.filter((c) => c.status === 'unchecked').map((c) => `the ${c.name}`);
+    io.out(`NOT verified: nothing failed, but ${open.join(' and ')} could not be checked.`);
+    return 3;
+  }
+  io.out('Verified.');
+  return 0;
 }
 
 const show = (value: unknown) => (value === undefined ? 'nothing' : JSON.stringify(value));

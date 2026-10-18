@@ -45,8 +45,14 @@ primaries are the test fixtures.
   without this a file could verify while showing a reader something else.
 - **Seed commitment.** The commitment that matters is the one published at Scheduled, outside
   the record. `createRecord` requires it, and the verifier checks against it with
-  `--seed-commitment`. Without it, the verifier says the check is only internal. Anchors in
-  P2.A2 will supply it automatically.
+  `--seed-commitment`. Without it the seed check is unchecked and nothing verifies: the CLI
+  exits 3 and says what it couldn't check (USTP Hub ADR 0016, "No anchors, no pass"). Anchors in
+  P2.A2 will supply the commitment and replace the option.
+- **Tally hash and results file.** Following USTP Hub ADR 0016, the hash of the tally record is
+  the tally hash; the election's record hash is the hash of its signed public index. When cast
+  vote records are auditor-only, the public tier carries a signed `ustp-election-results/1`
+  file made from the tally record. Public data checks its seed, engine, and consistency but
+  can't re-run the count, so a results file never verifies on its own.
 - **Engine identity.** A record names the package name and version, and optionally the npm
   tarball's integrity string as the build hash. The verifier requires the same name and version,
   and prints the build hash for comparison with the registry.
@@ -62,5 +68,6 @@ primaries are the test fixtures.
   that rule for historical fixtures.
 - USTP Hub's design documents should record the floor comparison, the denominators, empty
   seats, and the draw. Until they do, this ADR and docs/spec.md are the reference.
-- The voting worker must write record files with canonicalize and pass the published seed
-  commitment to createRecord.
+- The voting worker must write signed files with canonicalize, pass the published seed
+  commitment to createRecord, and sign the results file too when cast vote records are
+  auditor-only.
