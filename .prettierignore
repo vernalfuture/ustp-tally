@@ -1,0 +1,5 @@
+pnpm-lock.yaml
+dist/
+coverage/
+# Written by scripts/fixtures; kept byte-for-byte as the converters produce them.
+fixtures/**/*.json

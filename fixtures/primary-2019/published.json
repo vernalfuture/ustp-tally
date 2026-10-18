@@ -1,0 +1,124 @@
+{
+  "transcribedFrom": "https://transhumanist-party.org/wp-content/uploads/2019/10/USTP_2019_Presidential_Primary_Vote_Results.pdf",
+  "ballots": 312,
+  "contests": {
+    "president": {
+      "method": "instant-runoff",
+      "names": {
+        "ben-zion": "Johannon Ben Zion",
+        "harris": "Kristan T. Harris",
+        "haywire": "Rachel Haywire",
+        "holsopple": "Charles Holsopple",
+        "kerecz": "John J. Kerecz",
+        "schattke": "Jonathan Schattke",
+        "taylor": "Matt Taylor",
+        "vrillon": "Vrillon",
+        "none-of-the-above": "None of the Above"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 109, "percent": "34.94" },
+            { "candidate": "haywire", "votes": 72, "percent": "23.08" },
+            { "candidate": "harris", "votes": 35, "percent": "11.22" },
+            { "candidate": "holsopple", "votes": 30, "percent": "9.62" },
+            { "candidate": "kerecz", "votes": 19, "percent": "6.09" },
+            { "candidate": "taylor", "votes": 17, "percent": "5.45" },
+            { "candidate": "none-of-the-above", "votes": 13, "percent": "4.17" },
+            { "candidate": "vrillon", "votes": 9, "percent": "2.88" },
+            { "candidate": "schattke", "votes": 8, "percent": "2.56" }
+          ],
+          "eliminated": "schattke"
+        },
+        {
+          "round": 2,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 111, "percent": "35.58" },
+            { "candidate": "haywire", "votes": 76, "percent": "24.36" },
+            { "candidate": "harris", "votes": 36, "percent": "11.54" },
+            { "candidate": "holsopple", "votes": 30, "percent": "9.62" },
+            { "candidate": "kerecz", "votes": 19, "percent": "6.09" },
+            { "candidate": "taylor", "votes": 18, "percent": "5.77" },
+            { "candidate": "none-of-the-above", "votes": 13, "percent": "4.17" },
+            { "candidate": "vrillon", "votes": 9, "percent": "2.88" }
+          ],
+          "eliminated": "vrillon"
+        },
+        {
+          "round": 3,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 114, "percent": "36.54" },
+            { "candidate": "haywire", "votes": 78, "percent": "25.00" },
+            { "candidate": "harris", "votes": 36, "percent": "11.54" },
+            { "candidate": "holsopple", "votes": 30, "percent": "9.62" },
+            { "candidate": "taylor", "votes": 21, "percent": "6.73" },
+            { "candidate": "kerecz", "votes": 19, "percent": "6.09" },
+            { "candidate": "none-of-the-above", "votes": 14, "percent": "4.49" }
+          ],
+          "eliminated": "none-of-the-above"
+        },
+        {
+          "round": 4,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 117, "percent": "37.50" },
+            { "candidate": "haywire", "votes": 81, "percent": "25.96" },
+            { "candidate": "harris", "votes": 39, "percent": "12.50" },
+            { "candidate": "holsopple", "votes": 32, "percent": "10.26" },
+            { "candidate": "kerecz", "votes": 22, "percent": "7.05" },
+            { "candidate": "taylor", "votes": 21, "percent": "6.73" }
+          ],
+          "eliminated": "taylor"
+        },
+        {
+          "round": 5,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 124, "percent": "39.74" },
+            { "candidate": "haywire", "votes": 83, "percent": "26.60" },
+            { "candidate": "harris", "votes": 42, "percent": "13.46" },
+            { "candidate": "holsopple", "votes": 36, "percent": "11.54" },
+            { "candidate": "kerecz", "votes": 27, "percent": "8.65" }
+          ],
+          "eliminated": "kerecz"
+        },
+        {
+          "round": 6,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 137, "percent": "43.91" },
+            { "candidate": "haywire", "votes": 86, "percent": "27.56" },
+            { "candidate": "holsopple", "votes": 46, "percent": "14.74" },
+            { "candidate": "harris", "votes": 43, "percent": "13.78" }
+          ],
+          "eliminated": "harris"
+        },
+        {
+          "round": 7,
+          "continuing": 312,
+          "tallies": [
+            { "candidate": "ben-zion", "votes": 160, "percent": "51.28" },
+            { "candidate": "haywire", "votes": 97, "percent": "31.09" },
+            { "candidate": "holsopple", "votes": 55, "percent": "17.63" }
+          ]
+        }
+      ],
+      "winner": "ben-zion",
+      "rankSummary": {
+        "ben-zion": [109, 58, 35, 16, 17, 13, 9, 21, 34],
+        "harris": [35, 50, 43, 43, 28, 32, 31, 40, 10],
+        "haywire": [72, 29, 28, 21, 20, 17, 34, 34, 57],
+        "holsopple": [30, 36, 50, 44, 35, 40, 35, 38, 4],
+        "kerecz": [19, 26, 35, 59, 65, 54, 40, 13, 1],
+        "schattke": [8, 35, 39, 43, 51, 54, 42, 34, 6],
+        "taylor": [17, 28, 43, 49, 46, 44, 53, 24, 8],
+        "vrillon": [9, 24, 31, 28, 36, 37, 46, 66, 35],
+        "none-of-the-above": [13, 26, 8, 9, 14, 21, 22, 42, 157]
+      }
+    }
+  }
+}

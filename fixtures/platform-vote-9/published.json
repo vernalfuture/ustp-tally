@@ -1,0 +1,256 @@
+{
+  "transcribedFrom": "https://transhumanist-party.org/wp-content/uploads/2025/03/USTP_Platform_Vote_9_Results.pdf",
+  "ballots": 68,
+  "contests": {
+    "q01": {
+      "question": "I",
+      "title": "Section E9-A. Defeat of COVID as a Priority",
+      "method": "proposal",
+      "counts": { "yes": 47, "no": 14, "abstain": 7 },
+      "percent": { "yes": "69.1", "no": "20.6", "abstain": "10.3" },
+      "outcome": "passed",
+      "statement": "The result of the Question I vote is \"Yes\"."
+    },
+    "q02": {
+      "question": "II",
+      "title": "Section E9-A. Ancillary Provisions",
+      "method": "choose-n",
+      "tallies": [
+        { "candidate": "e9-a-i", "votes": 43, "percent": "63.2", "included": true },
+        { "candidate": "e9-a-ii", "votes": 33, "percent": "48.5", "included": false },
+        { "candidate": "e9-a-iii", "votes": 36, "percent": "52.9", "included": true },
+        { "candidate": "e9-a-iv", "votes": 45, "percent": "66.2", "included": true }
+      ],
+      "statement": "Any option receiving the majority of votes cast will be included."
+    },
+    "q03": {
+      "question": "III",
+      "title": "Section E9-A. Language Regarding Only Scientific and Technological Solutions",
+      "method": "proposal",
+      "counts": { "yes": 39, "no": 18, "abstain": 11 },
+      "percent": { "yes": "57.4", "no": "26.5", "abstain": "16.2" },
+      "outcome": "passed",
+      "statement": "The result of the Question III vote is \"Yes\"."
+    },
+    "q05": {
+      "question": "V",
+      "title": "Section E9-B. Ancillary Provisions on Bias and Use of AI in Law Enforcement",
+      "method": "choose-n",
+      "tallies": [
+        { "candidate": "e9-b-i", "votes": 37, "percent": "54.4", "included": true },
+        { "candidate": "e9-b-ii", "votes": 33, "percent": "48.5", "included": false }
+      ],
+      "statement": "Any option receiving the majority of votes cast will be included."
+    },
+    "q06": {
+      "question": "VI",
+      "title": "Section E9-C. Reversible Cryopreservation Techniques",
+      "method": "proposal",
+      "counts": { "yes": 43, "no": 15, "abstain": 10 },
+      "percent": { "yes": "63.2", "no": "22.1", "abstain": "14.7" },
+      "outcome": "passed",
+      "statement": "The result of the Question VI vote is \"Yes\"."
+    },
+    "q07": {
+      "question": "VII",
+      "title": "Section E9-D. Public Money for Public Code",
+      "method": "proposal",
+      "counts": { "yes": 57, "no": 3, "abstain": 8 },
+      "percent": { "yes": "83.8", "no": "4.4", "abstain": "11.8" },
+      "outcome": "passed",
+      "statement": "The result of the Question VII vote is \"Yes\"."
+    },
+    "q08": {
+      "question": "VIII",
+      "title": "Section E9-E. Privacy on Social Media",
+      "method": "proposal",
+      "counts": { "yes": 51, "no": 8, "abstain": 9 },
+      "percent": { "yes": "75.0", "no": "11.8", "abstain": "13.2" },
+      "outcome": "passed",
+      "statement": "The result of the Question VIII vote is \"Yes\"."
+    },
+    "q10": {
+      "question": "X",
+      "title": "Section E9-G. Security Whistleblower Program",
+      "method": "proposal",
+      "counts": { "yes": 60, "no": 1, "abstain": 7 },
+      "percent": { "yes": "88.2", "no": "1.5", "abstain": "10.3" },
+      "outcome": "passed",
+      "statement": "The result of the Question X vote is \"Yes\"."
+    },
+    "q11": {
+      "question": "XI",
+      "title": "Amendment to Section XXVII",
+      "method": "proposal",
+      "labels": { "yes": "Amendment XXVII-1", "no": "Current Version of Section XXVII" },
+      "counts": { "yes": 48, "no": 7, "abstain": 13 },
+      "percent": { "yes": "70.6", "no": "10.3", "abstain": "19.1" },
+      "outcome": "passed",
+      "statement": "Amendment XXVII-1 passes and is adopted."
+    },
+    "q12": {
+      "question": "XII",
+      "title": "Amendment to Section XXXVI",
+      "method": "proposal",
+      "counts": { "yes": 46, "no": 10, "abstain": 12 },
+      "percent": { "yes": "67.6", "no": "14.7", "abstain": "17.6" },
+      "outcome": "passed",
+      "statement": "The result of the Question XII vote is \"Yes\"."
+    },
+    "q13": {
+      "question": "XIII",
+      "title": "Amendment to Section LXXIX",
+      "method": "proposal",
+      "labels": { "yes": "Amendment LXXIX-1", "no": "Current Version of Section LXXIX" },
+      "counts": { "yes": 52, "no": 4, "abstain": 12 },
+      "percent": { "yes": "76.5", "no": "5.9", "abstain": "17.6" },
+      "outcome": "passed",
+      "statement": "Amendment LXXIX-1 passes and is adopted."
+    },
+    "q14": {
+      "question": "XIV",
+      "title": "Amendment to Section XCIX",
+      "method": "proposal",
+      "labels": { "yes": "Amendment XCIX-1", "no": "Current Version of Section XCIX" },
+      "counts": { "yes": 41, "no": 8, "abstain": 19 },
+      "percent": { "yes": "60.3", "no": "11.8", "abstain": "27.9" },
+      "outcome": "passed",
+      "statement": "Amendment XCIX-1 passes and is adopted."
+    },
+    "q15": {
+      "question": "XV",
+      "title": "Amendment to Section CI",
+      "method": "proposal",
+      "labels": { "yes": "Amendment CI-1", "no": "Current Version of Section CI" },
+      "counts": { "yes": 27, "no": 13, "abstain": 28 },
+      "percent": { "yes": "39.7", "no": "19.1", "abstain": "41.2" },
+      "outcome": "passed",
+      "statement": "Abstentions were a plurality. Thus, Amendment CI-1 is adopted."
+    },
+    "q16": {
+      "question": "XVI",
+      "title": "Amendment to Section CII (ranked)",
+      "method": "instant-runoff",
+      "names": {
+        "current": "Current Version of Section CII",
+        "cii-1": "Amendment CII-1",
+        "cii-2": "Amendment CII-2"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 58,
+          "tallies": [
+            { "candidate": "current", "votes": 8, "percent": "13.8" },
+            { "candidate": "cii-1", "votes": 36, "percent": "62.1" },
+            { "candidate": "cii-2", "votes": 14, "percent": "24.1" }
+          ]
+        }
+      ],
+      "winner": "cii-1",
+      "statement": "Amendment CII-1 passes and is adopted."
+    },
+    "q17": {
+      "question": "XVII",
+      "title": "Amendment to Section CIII",
+      "method": "proposal",
+      "labels": { "yes": "Amendment CIII-1", "no": "Current Version of Section CIII" },
+      "counts": { "yes": 37, "no": 11, "abstain": 20 },
+      "percent": { "yes": "54.4", "no": "16.2", "abstain": "29.4" },
+      "outcome": "passed",
+      "statement": "Amendment CIII-1 passes and is adopted."
+    },
+    "q18": {
+      "question": "XVIII",
+      "title": "Amendment to Section CIV (ranked)",
+      "method": "instant-runoff",
+      "names": {
+        "current": "Current Version of Section CIV",
+        "civ-1": "Amendment CIV-1",
+        "civ-2": "Amendment CIV-2"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 58,
+          "tallies": [
+            { "candidate": "current", "votes": 8, "percent": "13.8" },
+            { "candidate": "civ-1", "votes": 16, "percent": "27.6" },
+            { "candidate": "civ-2", "votes": 34, "percent": "58.6" }
+          ]
+        }
+      ],
+      "winner": "civ-2",
+      "statement": "Amendment CIV-2 passes and is adopted."
+    },
+    "q19": {
+      "question": "XIX",
+      "title": "Amendment to Section CX",
+      "method": "proposal",
+      "labels": { "yes": "Amendment CX-1", "no": "Current Version of Section CX" },
+      "counts": { "yes": 34, "no": 10, "abstain": 24 },
+      "percent": { "yes": "50.0", "no": "14.7", "abstain": "35.3" },
+      "outcome": "passed",
+      "statement": "Amendment CX-1 passes and is adopted."
+    }
+  },
+  "pending": {
+    "q04": {
+      "question": "IV",
+      "title": "Section E9-B. Perception of Artificial Intelligence as an Opportunity (ranked)",
+      "missing": "Individual rankings. USTP published only round totals.",
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 61,
+          "tallies": { "e9-b-1": 24, "e9-b-2": 14, "e9-b-3": 18, "e9-b-no": 5 },
+          "eliminated": "e9-b-no"
+        },
+        {
+          "round": 2,
+          "continuing": 60,
+          "tallies": { "e9-b-1": 26, "e9-b-2": 15, "e9-b-3": 19 },
+          "eliminated": "e9-b-2"
+        },
+        { "round": 3, "continuing": 59, "tallies": { "e9-b-1": 38, "e9-b-3": 21 } }
+      ],
+      "winner": "e9-b-1"
+    },
+    "q09": {
+      "question": "IX",
+      "title": "Section E9-F. Restraint of Government Agencies' Efforts to Undermine Security Measures (ranked)",
+      "missing": "Individual rankings, and a tie-break the design does not have: round 1 tied e9-f-1 and e9-f-no at 6 votes, and USTP eliminated e9-f-no for having fewer second-choice votes.",
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 57,
+          "tallies": { "e9-f-1": 6, "e9-f-2": 24, "e9-f-3": 21, "e9-f-no": 6 },
+          "eliminated": "e9-f-no"
+        },
+        {
+          "round": 2,
+          "continuing": 53,
+          "tallies": { "e9-f-1": 7, "e9-f-2": 24, "e9-f-3": 22 },
+          "eliminated": "e9-f-1"
+        },
+        { "round": 3, "continuing": 51, "tallies": { "e9-f-2": 28, "e9-f-3": 23 } }
+      ],
+      "winner": "e9-f-2"
+    },
+    "q20": {
+      "question": "XX",
+      "title": "Proposals on Investigations and Emergency Declarations (ranked)",
+      "missing": "Individual rankings. USTP published only round totals.",
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 54,
+          "tallies": { "zr-jg-1": 27, "rns-1-and-rns-2": 23, "status-quo": 4 },
+          "eliminated": "status-quo"
+        },
+        { "round": 2, "continuing": 53, "tallies": { "zr-jg-1": 28, "rns-1-and-rns-2": 25 } }
+      ],
+      "winner": "zr-jg-1"
+    }
+  }
+}

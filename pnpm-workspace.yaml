@@ -1,0 +1,4 @@
+# pnpm 12 settings for this single-package repository, on the USTP Hub monorepo's policy:
+# dependency build scripts are denied unless listed here (none need one today), and the
+# release-age gate stays at its default.
+allowBuilds: {}

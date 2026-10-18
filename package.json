@@ -1,0 +1,61 @@
+{
+  "name": "ustp-tally",
+  "version": "0.1.0",
+  "description": "Deterministic vote counting for USTP Hub elections (Proposal, Choose up to N, instant-runoff) and a CLI that re-tallies a signed election record.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "election",
+    "tally",
+    "instant-runoff",
+    "approval-voting",
+    "verifier"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "ustp-tally": "./dist/cli/bin.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts",
+    "!src/test-support",
+    "docs/spec.md"
+  ],
+  "sideEffects": false,
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "fast-check": "^4.10.2",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "transcribedFrom": "https://transhumanist-party.org/wp-content/uploads/2023/05/USTP_2023_Presidential_Primary_Vote_Results.pdf",
+  "ballots": 129,
+  "contests": {
+    "president": {
+      "method": "instant-runoff",
+      "names": {
+        "ross": "Thomas Ernest Ross, Jr. (Tom Ross)",
+        "twedt": "Daniel Emerson Twedt (Daniel Twedt)",
+        "none-of-the-above": "None of the Above"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "continuing": 129,
+          "tallies": [
+            { "candidate": "ross", "votes": 80, "percent": "62.02" },
+            { "candidate": "twedt", "votes": 35, "percent": "27.13" },
+            { "candidate": "none-of-the-above", "votes": 14, "percent": "10.85" }
+          ]
+        }
+      ],
+      "winner": "ross",
+      "rankSummary": {
+        "ross": [80, 34, 13],
+        "twedt": [35, 70, 14],
+        "none-of-the-above": [14, 15, 57]
+      }
+    }
+  }
+}

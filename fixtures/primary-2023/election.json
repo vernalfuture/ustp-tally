@@ -1,0 +1,11 @@
+{
+  "id": "ustp-2023-presidential-primary",
+  "contests": [
+    {
+      "id": "president",
+      "method": "instant-runoff",
+      "candidates": ["ross", "twedt", "none-of-the-above"],
+      "maxRanks": 3
+    }
+  ]
+}

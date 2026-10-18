@@ -1,0 +1,46 @@
+{
+  "id": "ustp-platform-vote-9",
+  "contests": [
+    { "id": "q01", "method": "proposal", "passRule": "simple-majority" },
+    {
+      "id": "q02",
+      "method": "choose-n",
+      "candidates": ["e9-a-i", "e9-a-ii", "e9-a-iii", "e9-a-iv"],
+      "seats": 4,
+      "maxSelections": 4,
+      "supportFloor": { "share": { "numerator": 1, "denominator": 2 }, "comparison": "more-than" }
+    },
+    { "id": "q03", "method": "proposal", "passRule": "simple-majority" },
+    {
+      "id": "q05",
+      "method": "choose-n",
+      "candidates": ["e9-b-i", "e9-b-ii"],
+      "seats": 2,
+      "maxSelections": 2,
+      "supportFloor": { "share": { "numerator": 1, "denominator": 2 }, "comparison": "more-than" }
+    },
+    { "id": "q06", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q07", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q08", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q10", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q11", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q12", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q13", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q14", "method": "proposal", "passRule": "simple-majority" },
+    { "id": "q15", "method": "proposal", "passRule": "simple-majority" },
+    {
+      "id": "q16",
+      "method": "instant-runoff",
+      "candidates": ["current", "cii-1", "cii-2"],
+      "maxRanks": 3
+    },
+    { "id": "q17", "method": "proposal", "passRule": "simple-majority" },
+    {
+      "id": "q18",
+      "method": "instant-runoff",
+      "candidates": ["current", "civ-1", "civ-2"],
+      "maxRanks": 3
+    },
+    { "id": "q19", "method": "proposal", "passRule": "simple-majority" }
+  ]
+}

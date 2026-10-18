@@ -1,0 +1,21 @@
+{
+  "id": "ustp-2019-presidential-primary",
+  "contests": [
+    {
+      "id": "president",
+      "method": "instant-runoff",
+      "candidates": [
+        "ben-zion",
+        "harris",
+        "haywire",
+        "holsopple",
+        "kerecz",
+        "schattke",
+        "taylor",
+        "vrillon",
+        "none-of-the-above"
+      ],
+      "maxRanks": 9
+    }
+  ]
+}
