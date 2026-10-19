@@ -1,6 +1,6 @@
 # ustp-tally
 
-The public tally library and verifier CLI for USTP Hub (ADR 0009 in the private ggrow3/USTPVote
+The public tally library and verifier CLI for USTP Hub (ADR 0009 in the private vernalfuture/USTPVote
 monorepo). The voting app pins an exact version, and every election record names it. The
 counting rules are in docs/spec.md; choices the design left open are in docs/adr/.
 
