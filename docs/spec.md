@@ -117,9 +117,9 @@ draw reads nothing from the ballots.
 
 Example: `{"candidate":"b","contest":"chair","purpose":"eliminate","round":1}`.
 
-## Election record
+## Tally record
 
-The tally part of a certified record, format `ustp-election-record/1`:
+The tally part of a certified election record, format `ustp-election-record/1`:
 
 | Field             | Contents                                                       |
 | ----------------- | -------------------------------------------------------------- |
@@ -131,43 +131,81 @@ The tally part of a certified record, format `ustp-election-record/1`:
 
 Cast vote records are in canonical form: each Choose up to N selection lists its candidates in
 contest order, so the order a voter clicked in (or the randomized order they saw) is never
-published, and the ballots are sorted by their RFC 8785 text, comparing UTF-16 code units. The
-record hash is the SHA-256 of the record's RFC 8785 bytes. `engine.integrity`, when present, is
-the npm tarball's integrity string for that version, which anyone can compare with
-`npm view ustp-tally@<version> dist.integrity`. `engine.name` must be an npm package name,
-`engine.version` a semantic version, and `engine.integrity` `sha512-` and 88 base64 characters.
+published, and the ballots are sorted by their RFC 8785 text, comparing UTF-16 code units.
 
-A signed record wraps it:
+The **tally hash** is the SHA-256 of the tally record's RFC 8785 bytes. The election's **record
+hash** is something else: the hash of the signed public index that lists every public file of
+the record (USTP Hub ADR 0016), which this package will read in runbook step P2.A2.
+
+`engine.integrity`, when present, is the npm tarball's integrity string for that version, which
+anyone can compare with `npm view ustp-tally@<version> dist.integrity`. `engine.name` must be an
+npm package name, `engine.version` a semantic version, and `engine.integrity` `sha512-` and 88
+base64 characters.
+
+## Results file
+
+When an election keeps its cast vote records in the auditor tier, the tally record is
+auditor-only, and the public tier carries a results file instead, format
+`ustp-election-results/1`:
+
+| Field      | Contents                                                       |
+| ---------- | -------------------------------------------------------------- |
+| `format`   | `"ustp-election-results/1"`                                    |
+| `election` | The election definition                                        |
+| `seed`     | `{ "commitment", "revealed" }`                                 |
+| `ballots`  | The number of ballots counted                                  |
+| `tally`    | `{ "engine": { "name", "version", "integrity"? }, "results" }` |
+
+`resultsFile(record)` makes it from the tally record, so the two always agree. Public data can
+check its seed, its engine, and that every contest result matches the election and the ballot
+count. It can't re-run the count, so a results file is never verified; an auditor verifies the
+tally record.
+
+## Signed files
+
+A tally record or results file is signed in an envelope:
 
 ```json
 { "record": { ... }, "signature": { "algorithm": "ecdsa-p256-sha256", "value": "<base64>" } }
 ```
 
-The signature is ECDSA P-256 with SHA-256 over the record's RFC 8785 bytes, DER-encoded, as
+The signature is ECDSA P-256 with SHA-256 over the document's RFC 8785 bytes, DER-encoded, as
 Cloud KMS, Vault Transit, and AWS KMS return it. The verifying key is given separately, never
-taken from the record. The file holding a signed record is exactly the RFC 8785 text of this
-envelope, optionally followed by one newline, so the bytes anyone reads are the bytes that were
-checked.
+taken from the document. A signed file is exactly the RFC 8785 text of its envelope, optionally
+followed by one newline, so the bytes anyone reads are the bytes that were checked.
 
 ## Verifier
 
-`ustp-tally verify <signed-record.json> --public-key <key.pem> [--seed-commitment <hex>]` checks,
-in order:
+`ustp-tally verify <signed-file.json> --public-key <key.pem> --seed-commitment <hex>` checks, in
+order:
 
 1. That the file is exactly RFC 8785 text. Duplicate keys, extra whitespace, and numbers written
    in a non-canonical way are refused.
 2. The signature, with the given ECDSA P-256 public key (SPKI PEM).
-3. The record's structure. It prints the record hash and any build hash the record names.
-4. The seed: the revealed seed must hash to the record's commitment and, with
-   `--seed-commitment`, the record's commitment must be the one published before polls opened.
-   Without that option the check proves only that the record agrees with itself, and says so.
-5. That the cast vote records are in canonical form and order.
-6. That the engine named in the record is this one, name and version.
-7. The re-tally: the count is re-run and compared with `tally.results`, field by field.
+3. The document's structure. It prints the tally hash or results hash, and any build hash.
+4. The seed: the revealed seed must hash to the document's commitment, and that commitment must
+   be the one published before polls opened, given with `--seed-commitment`.
+5. For a tally record: that the cast vote records are in canonical form and order. For a
+   results file: that every contest result matches the election and the ballot count.
+6. That the engine named in the document is this one, name and version.
+7. For a tally record, the re-tally: the count is re-run and compared with `tally.results`,
+   field by field.
 
-It exits 0 when every check passes, 1 when any fails, and 2 for unreadable input. Merkle roots,
-block chains, anchors (which will carry the published seed commitment), and the count invariant
-(ballots = participation records) are runbook step P2.A2.
+Each check passes, fails, or is unchecked. The verdict is **verified** only when every check
+passes. A check that needs something outside the document is unchecked without it: the seed
+without `--seed-commitment`, and the re-tally of a results file. Then nothing has verified, and
+the verifier says what it couldn't check.
+
+| Exit | Meaning                                                 |
+| ---- | ------------------------------------------------------- |
+| 0    | Verified                                                |
+| 1    | A check failed, or the signature doesn't match          |
+| 2    | Unreadable input or a bad option                        |
+| 3    | Nothing failed, but at least one check couldn't be made |
+
+Merkle roots, block chains, the signed indexes, lifecycle anchors (which will supply the
+published seed commitment, so the option goes away), and the count invariant (ballots =
+participation records) are runbook step P2.A2.
 
 ## Versions
 

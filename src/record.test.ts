@@ -11,8 +11,8 @@ import {
   diffJson,
   parseRecord,
   RECORD_FORMAT,
-  recordHash,
   retallyRecord,
+  tallyHash,
   type ElectionRecord,
 } from './record.js';
 import { tallyElection } from './tally.js';
@@ -77,34 +77,42 @@ describe('createRecord', () => {
   });
 });
 
-describe('recordHash', () => {
-  it('is the SHA-256 of the record in RFC 8785 form', () => {
+describe('tallyHash', () => {
+  it('is the SHA-256 of the tally record in RFC 8785 form', () => {
     const record = fresh();
-    expect(recordHash(record)).toBe(
+    expect(tallyHash(record)).toBe(
       createHash('sha256').update(canonicalize(record), 'utf8').digest('hex'),
     );
   });
 });
 
 describe('retallyRecord', () => {
-  it('passes every check on an untouched record', () => {
-    const report = retallyRecord(fresh());
-    expect(report.checks.map((c) => [c.name, c.ok])).toEqual([
-      ['seed', true],
-      ['ballot order', true],
-      ['engine', true],
-      ['re-tally', true],
+  const published = { seedCommitment: COMMITMENT };
+
+  it('verifies an untouched record against the published seed commitment', () => {
+    const report = retallyRecord(fresh(), published);
+    expect(report.checks.map((c) => [c.name, c.status])).toEqual([
+      ['seed', 'pass'],
+      ['ballot order', 'pass'],
+      ['engine', 'pass'],
+      ['re-tally', 'pass'],
     ]);
-    expect(report.ok).toBe(true);
+    expect(report.verdict).toBe('verified');
     expect(report.differences).toEqual([]);
   });
 
-  it('checks the seed against the commitment published before polls opened, when given', () => {
-    expect(retallyRecord(fresh(), { seedCommitment: COMMITMENT }).checks[0]).toMatchObject({
+  it('never reports verified without the published seed commitment', () => {
+    const report = retallyRecord(fresh());
+    expect(report.checks[0]).toMatchObject({
       name: 'seed',
-      ok: true,
-      detail: expect.stringContaining('published commitment') as string,
+      status: 'unchecked',
+      detail: expect.stringContaining('agrees with itself') as string,
     });
+    expect(report.checks.slice(1).every((c) => c.status === 'pass')).toBe(true);
+    expect(report.verdict).toBe('incomplete');
+  });
+
+  it('fails a seed picked after the published commitment', () => {
     // An operator who picked a seed after seeing ballots can write its own hash into the record.
     const regenerated = createRecord({
       election,
@@ -112,11 +120,10 @@ describe('retallyRecord', () => {
       seed: 'a'.repeat(64),
       seedCommitment: seedCommitment('a'.repeat(64)),
     });
-    expect(retallyRecord(regenerated).checks[0]?.ok).toBe(true);
-    expect(retallyRecord(regenerated, { seedCommitment: COMMITMENT }).checks[0]).toMatchObject({
-      name: 'seed',
-      ok: false,
-    });
+    expect(retallyRecord(regenerated).verdict).toBe('incomplete');
+    const report = retallyRecord(regenerated, published);
+    expect(report.checks[0]).toMatchObject({ name: 'seed', status: 'fail' });
+    expect(report.verdict).toBe('failed');
   });
 
   it('finds a ballot changed after the count', () => {
@@ -124,9 +131,9 @@ describe('retallyRecord', () => {
     const changed = record.castVoteRecords.find((b) => b.contests.p1 === 'no')!;
     changed.contests.p1 = 'yes';
     record.castVoteRecords = canonicalBallots(election, record.castVoteRecords);
-    const report = retallyRecord(record);
-    expect(report.ok).toBe(false);
-    expect(report.checks.find((c) => c.name === 're-tally')?.ok).toBe(false);
+    const report = retallyRecord(record, published);
+    expect(report.verdict).toBe('failed');
+    expect(report.checks.find((c) => c.name === 're-tally')?.status).toBe('fail');
     expect(report.differences).toContainEqual({
       path: 'tally.results.contests[0].counts.yes',
       expected: 1,
@@ -139,30 +146,36 @@ describe('retallyRecord', () => {
     const chair = record.tally.results.contests[1]!;
     if (chair.method !== 'instant-runoff') throw new Error();
     chair.winner = 'c';
-    const report = retallyRecord(record);
-    expect(report.ok).toBe(false);
+    const report = retallyRecord(record, published);
+    expect(report.verdict).toBe('failed');
     expect(report.differences).toEqual([
       { path: 'tally.results.contests[1].winner', expected: 'c', found: 'a' },
     ]);
   });
 
-  it('finds a seed swapped after the commitment', () => {
+  it('finds a seed swapped after the commitment, with or without the published one', () => {
     const record = fresh();
     record.seed.revealed = 'f'.repeat(64);
-    expect(retallyRecord(record).checks[0]).toMatchObject({ name: 'seed', ok: false });
+    for (const report of [retallyRecord(record), retallyRecord(record, published)]) {
+      expect(report.checks[0]).toMatchObject({ name: 'seed', status: 'fail' });
+      expect(report.verdict).toBe('failed');
+    }
   });
 
   it('finds cast vote records out of canonical order', () => {
     const record = fresh();
     record.castVoteRecords.reverse();
-    expect(retallyRecord(record).checks[1]).toMatchObject({ name: 'ballot order', ok: false });
+    expect(retallyRecord(record, published).checks[1]).toMatchObject({
+      name: 'ballot order',
+      status: 'fail',
+    });
   });
 
   it('finds a record counted by another engine version', () => {
     const record = fresh();
     record.tally.engine = { name: 'ustp-tally', version: '0.0.9' };
-    const engine = retallyRecord(record).checks[2]!;
-    expect(engine).toMatchObject({ name: 'engine', ok: false });
+    const engine = retallyRecord(record, published).checks[2]!;
+    expect(engine).toMatchObject({ name: 'engine', status: 'fail' });
     expect(engine.detail).toContain('0.0.9');
   });
 });

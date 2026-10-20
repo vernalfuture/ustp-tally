@@ -19,7 +19,7 @@ written out in [docs/spec.md](docs/spec.md).
 ## Verify an election record
 
 ```bash
-npx ustp-tally@0.1.0 verify election-record.json --public-key ustp-records.pem --seed-commitment <hex>
+npx ustp-tally@0.1.0 verify tally-record.json --public-key ustp-records.pem --seed-commitment <hex>
 ```
 
 Use the version the record names, the party's published record-signing key, and the seed
@@ -29,9 +29,9 @@ canonical form, and the engine version, then re-runs the count and compares it w
 published result:
 
 ```
-ustp-tally 0.1.0: verifying election-record.json
-pass  signature    valid: ECDSA P-256 with SHA-256 over the RFC 8785 record, key sha256:…
-info  record hash  sha256:…
+ustp-tally 0.1.0: verifying tally-record.json
+pass  signature    valid: ECDSA P-256 with SHA-256 over the RFC 8785 document, key sha256:…
+info  tally hash   sha256:…
 pass  seed         the revealed seed matches the published commitment …
 pass  ballot order 312 cast vote records in canonical order
 pass  engine       counted with ustp-tally 0.1.0, the version running here
@@ -39,9 +39,20 @@ pass  re-tally     1 of 1 contests match the published result
 Verified.
 ```
 
-Without `--seed-commitment`, the seed check proves only that the record agrees with itself, and
-the line says so. It exits 0 when everything checks out, 1 when a check fails, and 2 for
-unreadable input. Checks of Merkle roots, block chains, and anchors come in a later release.
+Nothing verifies on the record's word alone. Without `--seed-commitment`, the seed is unchecked
+and the verifier exits 3, saying what it couldn't check. The same goes for a signed results file
+(`ustp-election-results/1`), which an election publishes when its cast vote records are
+auditor-only: the verifier checks its seed, engine, and consistency, but only an auditor holding
+the tally record can re-run the count.
+
+| Exit | Meaning                                                 |
+| ---- | ------------------------------------------------------- |
+| 0    | Verified                                                |
+| 1    | A check failed                                          |
+| 2    | Unreadable input or a bad option                        |
+| 3    | Nothing failed, but at least one check couldn't be made |
+
+Checks of the signed indexes, Merkle roots, block chains, and anchors come in a later release.
 
 ## Use the library
 
